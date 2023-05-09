@@ -1,4 +1,3 @@
-import java.nio.file.attribute.UserPrincipalNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -9,18 +8,15 @@ import java.util.Scanner;
  */
 public class Person {
 
-    String name;
+    public static String name;
     static String currentLocation = "entrance";
-    private ArrayList<String> inventory;
+    static private ArrayList<String> inventory = new ArrayList<>(List.of("backpack"));
     int energyLevel;
     public static Scanner personInput = new Scanner(System.in);
-    public static ArrayList<String> verbs = new ArrayList<>(List.of("go", "move", "walk", "jump", "climb"));
+    public static ArrayList<String> movements = new ArrayList<>(List.of("go", "move", "walk"));
     public static ArrayList<String> directions = new ArrayList<>(List.of("north", "south", "east", "west", "up", "down"));
-
-    Person(String name){
-        energyLevel = 100;
-        currentLocation = "entrance";
-    }
+    public static ArrayList<String> actions = new ArrayList<>(List.of("pick up", "take", "grab", "pick", "drop", "get rid of", "lose"));
+    public static ArrayList<String> allItems = new ArrayList<>(List.of("key", "backpack", "flashlight"));
 
     /**
      * reads all user inputs and sends inputs to the right methods depending on what the user has types. Also sends an error message when the user inputs a command that is not applicable to the game. 
@@ -29,41 +25,82 @@ public class Person {
     public static void readInputs(String userInput) {
         userInput = userInput.toLowerCase();
         String[] slicedInput = userInput.split(" ");
+        if ( (userInput.equals("inventory")) || (userInput.equals("look at inventory")) || (userInput.equals("check inventory")) || (userInput.equals("what's in my inventory")) || (userInput.equals("what's in inventory")) || (userInput.equals("print inventory")) || (userInput.equals("show inventory")) || (userInput.equals("show my inventory")) || (userInput.equals("show the inventory"))) {
+            printInventory();
+            return;
+        } 
+        if ((directions.contains(userInput))) {
+            lookAround(slicedInput, userInput);
+        }
         int directionCounter = 0;
-        int verbCounter = 0;
+        int movementsCounter = 0;
+        int itemCounter = 0;
+        int actionCounter = 0;
         for ( String i : slicedInput) { 
-            if (verbs.contains(i) || (i.equals("look"))) {
-                verbCounter += 1;
+            if (movements.contains(i) || (i.equals("look"))) {
+                movementsCounter += 1;
             }
             if (directions.contains(i)) {
                 directionCounter += 1;
             }
+            if (allItems.contains(i)) {
+                itemCounter += 1;
+            }
+            if (actions.contains(i)) {
+                actionCounter += 1;
+            }
         } 
-        if ( ( ((directionCounter == 0) && (verbCounter == 0)) || ((verbCounter > 0) && (directionCounter == 0)) ) && (userInput.equals("look around") == false ) ) {
+        if (allItems.contains(userInput)) {
+            if (userInput.equals("key")) {
+                if (currentLocation.equals("basement") && (inventory.contains("flashlight"))) { 
+                    Item.key("look");
+                } else {
+                    System.out.println("This isn't a valid command.");
+                    String retryInput = personInput.nextLine();
+                    readInputs(retryInput);
+                }
+            }
+            if (userInput.equals("flashlight")) {
+                if (currentLocation.equals("music room")) { 
+                    Item.key("look");
+                } else { 
+                    System.out.println("This isn't a valid command.");
+                    String retryInput = personInput.nextLine();
+                    readInputs(retryInput);
+                }
+            }
+        }
+        if ( ( ((directionCounter == 0) && (movementsCounter == 0) && (itemCounter == 0) ) 
+        || (((movementsCounter == 0) && (directionCounter == 0)) && (itemCounter > 0)) && ((userInput.equals("look around") == false) && (actionCounter == 0) ) 
+        || ((movementsCounter > 0) && (directionCounter == 0)) && (itemCounter == 0)) && (userInput.equals("look around") == false )  
+        || ((((movementsCounter == 0) && (directionCounter > 0)) && (itemCounter == 0)) && (userInput.equals("look around") == false ))) {
             System.out.println("This isn't a valid command.");
             String retryInput = personInput.nextLine();
             readInputs(retryInput);
-        } else if (verbCounter > 1) {
+        } else if (movementsCounter > 1) {
             System.out.println("Only use one verb in your commands.");
             String retryInput = personInput.nextLine();
             readInputs(retryInput);
         } else if (directionCounter > 1) {
-            System.out.println("You can't go in two directions at once");
+            System.out.println("This isn't a valid command.");
             String retryInput = personInput.nextLine();
             readInputs(retryInput);
-        } 
-        if (directions.contains(userInput)) {
-            lookAround(slicedInput, userInput);
+        } else if (itemCounter > 1) {
+            System.out.println("You can't use two items at once!");
+            String retryInput = personInput.nextLine();
+            readInputs(retryInput);
         }
-        if (directions.contains(userInput) == false ) { 
+        if (itemCounter > 0) {
+            Item.itemInputReader(slicedInput, userInput, currentLocation);
+        }
+        if (directions.contains(userInput) == false) { 
             for ( String i : slicedInput) { 
-                if (i.equalsIgnoreCase("Look")) {
+                if ((i.equalsIgnoreCase("Look")) && (itemCounter == 0)){
                     lookAround(slicedInput, userInput);
                 }
                 for ( String j : slicedInput) { 
-                    if (verbs.contains(j)) { 
+                    if (movements.contains(j)) { 
                         if (i.equalsIgnoreCase("go") || i.equalsIgnoreCase("walk") || i.equalsIgnoreCase("move")) {
-                            
                             if (userInput.contains("north")) {
                                 changeLocation(currentLocation, "north");
                                 break;
@@ -90,7 +127,7 @@ public class Person {
                             } 
                         } 
                     }
-                } 
+               } 
             } }
 
         }
@@ -112,18 +149,36 @@ public class Person {
                         Room.entranceHall("N/A");
                     }
                     if(direction.equals("south")) {
-                        // add key if-statement
-                        System.out.println("You can't leave! You don't have a key!");
-                        String falseDirectionInput = personInput.nextLine();   
-                        readInputs(falseDirectionInput);
+                        if  (inventory.contains("key") == false) { 
+                            System.out.println("You can't leave! The gate has locked behind you and you don't have the key!");
+                            String falseDirectionInput = personInput.nextLine();   
+                            readInputs(falseDirectionInput);
+                        } else if (inventory.contains("key")) { 
+                            System.out.println("The gate is locked. Do you want to see if your key opens it?");
+                            String exitInput = personInput.nextLine();
+                            exitInput = exitInput.toLowerCase();
+                            if ( (exitInput.equals("yes")) || (exitInput.equals("sure")) || (exitInput.equals("okay")) ||(exitInput.equals("ok")) ||(exitInput.equals("try key")) || (exitInput.equals("try the key")) || (exitInput.equals("use the key")) || (exitInput.equals("use key"))  ) {
+                                Room.exit();
+                            } else if (exitInput.equals("no")) {
+                                System.out.println("Ok, if you say so.");
+                                String nextInput = personInput.nextLine();
+                                readInputs(nextInput);
+                            }
+                        }
                     }
                     if(direction.equals("east")) {
                         System.out.println("You quickly get lost in the dark forest and are killed by ghosts!");
                         System.out.println("Game over.");
+                        System.out.println("--------------------");
+                        System.out.println("--------------------");
+                        System.exit(0);
                     }
                     if(direction.equals("west")) {
                         System.out.println("You quickly get lost in the dark forest and are killed by ghosts!");
                         System.out.println("Game over.");
+                        System.out.println("--------------------");
+                        System.out.println("--------------------");
+                        System.exit(0);
                     }
                 }
                 if (startingLocation.equals("entrance hall")) {
@@ -133,7 +188,7 @@ public class Person {
                     }
                     if(direction.equals("south")) {
                         currentLocation = "entrance";
-                        Room.Entrance("N/A");
+                        Room.entrance("N/A");
                     }
                     if(direction.equals("east")) {
                         System.out.println("There's no door this way!");
@@ -156,7 +211,7 @@ public class Person {
                     }
                     if(direction.equals("east")) {
                         currentLocation = "library";
-                        Room.library("N/A");
+                        Room.library("N/A", inventory);
                     }
                     if(direction.equals("west")) {
                         System.out.println("There's no door this way!");
@@ -167,7 +222,7 @@ public class Person {
                 if (startingLocation.equals("library")) {
                     if(direction.equals("north")) {
                         currentLocation = "music room";
-                        Room.musicRoom("N/A");
+                        Room.musicRoom("N/A", inventory);
                     }
                     if(direction.equals("south")) {
                         System.out.println("There's no door this way!");
@@ -206,7 +261,7 @@ public class Person {
                     }
                     if (direction.equals("down")) {
                         currentLocation = "basement";
-                        Room.basement("N/A");
+                        Room.basement("N/A", inventory);
                     }
                 }
                 if (startingLocation.equals("music room")) {
@@ -217,7 +272,7 @@ public class Person {
                     }
                     if(direction.equals("south")) {
                         currentLocation = "library";
-                        Room.library("N/A");
+                        Room.library("N/A", inventory);
                     }
                     if(direction.equals("east")) {
                         System.out.println("There's no door this way!");
@@ -241,7 +296,7 @@ public class Person {
                     }
                     if(direction.equals("east")) {
                         currentLocation = "music room";
-                        Room.musicRoom("N/A");
+                        Room.musicRoom("N/A", inventory);
                     }
                     if(direction.equals("west")) {
                         System.out.println("There's no door this way!");
@@ -286,21 +341,21 @@ public class Person {
     public static void lookAround(String[] slicedInput1, String input1){
         if (currentLocation.equals("entrance")){ 
             if (input1.equalsIgnoreCase("look around")) {
-                Room.Entrance("look around");
+                Room.entrance("look around");
             }
             if (slicedInput1[0].equalsIgnoreCase("look") || directions.contains(slicedInput1[0])) { 
                 for ( String i : slicedInput1) { 
                     if (i.equalsIgnoreCase("north")){ 
-                        Room.Entrance("north"); 
+                        Room.entrance("north"); 
                     }
                     if (i.equalsIgnoreCase("south")){ 
-                        Room.Entrance("south"); 
+                        Room.entrance("south"); 
                     }
                     if (i.equalsIgnoreCase("east")){ 
-                        Room.Entrance("east"); 
+                        Room.entrance("east"); 
                     }
                     if (i.equalsIgnoreCase("west")){ 
-                        Room.Entrance("west"); 
+                        Room.entrance("west"); 
                     }
                     if ((i.equalsIgnoreCase("up")) || (i.equalsIgnoreCase("down"))) {
                         System.out.println("This isn't a valid input.");
@@ -361,21 +416,21 @@ public class Person {
             }
         } else if (currentLocation.equals("library")){ 
             if (input1.equalsIgnoreCase("Look around")) {
-                Room.library("look around");
+                Room.library("look around", inventory);
             }
             if (slicedInput1[0].equalsIgnoreCase("look") || directions.contains(slicedInput1[0])) { 
                 for ( String i : slicedInput1) { 
                     if (i.equalsIgnoreCase("north")){ 
-                        Room.library("north"); 
+                        Room.library("north", inventory); 
                     }
                     if (i.equalsIgnoreCase("south")){ 
-                        Room.library("south"); 
+                        Room.library("south", inventory); 
                     }
                     if (i.equalsIgnoreCase("east")){ 
-                        Room.library("east"); 
+                        Room.library("east", inventory); 
                     }
                     if (i.equalsIgnoreCase("west")){ 
-                        Room.library("west"); 
+                        Room.library("west", inventory); 
                     }
                     if ((i.equalsIgnoreCase("up")) || (i.equalsIgnoreCase("down"))) {
                         System.out.println("This isn't a valid input.");
@@ -414,21 +469,21 @@ public class Person {
             }
         } else if (currentLocation.equals("music room")){ 
             if (input1.equalsIgnoreCase("Look around")) {
-                Room.musicRoom("look around");
+                Room.musicRoom("look around", inventory);
             }
             if (slicedInput1[0].equalsIgnoreCase("look") || directions.contains(slicedInput1[0])) { 
                 for ( String i : slicedInput1) { 
                     if (i.equalsIgnoreCase("north")){ 
-                        Room.musicRoom("north"); 
+                        Room.musicRoom("north", inventory); 
                     }
                     if (i.equalsIgnoreCase("south")){ 
-                        Room.musicRoom("south"); 
+                        Room.musicRoom("south", inventory); 
                     }
                     if (i.equalsIgnoreCase("east")){ 
-                        Room.musicRoom("east"); 
+                        Room.musicRoom("east", inventory); 
                     }
                     if (i.equalsIgnoreCase("west")){ 
-                        Room.musicRoom("west"); 
+                        Room.musicRoom("west", inventory); 
                     }
                     if ((i.equalsIgnoreCase("up")) || (i.equalsIgnoreCase("down"))) {
                         System.out.println("This isn't a valid input.");
@@ -465,24 +520,24 @@ public class Person {
                 }
         } else if (currentLocation.equals("basement")){ 
                 if (input1.equalsIgnoreCase("Look around")) {
-                    Room.basement("look around");
+                    Room.basement("look around", inventory);
                 }
                 if (slicedInput1[0].equalsIgnoreCase("look") || directions.contains(slicedInput1[0])) { 
                     for ( String i : slicedInput1) { 
                         if (i.equalsIgnoreCase("north")){ 
-                            Room.basement("north"); 
+                            Room.basement("north", inventory); 
                         }
                         if (i.equalsIgnoreCase("south")){ 
-                            Room.basement("south"); 
+                            Room.basement("south", inventory); 
                         }
                         if (i.equalsIgnoreCase("east")){ 
-                            Room.basement("east"); 
+                            Room.basement("east", inventory); 
                         }
                         if (i.equalsIgnoreCase("west")){ 
-                            Room.basement("west"); 
+                            Room.basement("west", inventory); 
                         }
                         if (i.equalsIgnoreCase("up")) {
-                            Room.basement("up");
+                            Room.basement("up", inventory);
                         }
                         if (i.equalsIgnoreCase("down")) {
                             System.out.println("This isn't a valid input.");
@@ -495,7 +550,29 @@ public class Person {
         } 
     
 
+    public static void addToInventory(String item){ 
+        inventory.add(item);
+        System.out.println("You have added a " + item + " to your inventory.");
+        String afterInventoryAsk = personInput.nextLine();
+        readInputs(afterInventoryAsk);
+    }
 
+    public static void removeFromInventory(String item) {
+        inventory.remove(item);
+        System.out.println("You have removed a " + item + " from your inventory.");
+        String afterInventoryAsk = personInput.nextLine();
+        readInputs(afterInventoryAsk);
+
+    }
+
+    public static void printInventory() {
+        System.out.println("Inventory:");
+        for( String i : inventory ) {
+            System.out.println(i);
+        }
+        String inventoryAsk = personInput.nextLine();
+        readInputs(inventoryAsk);
+    }
     public static void main(String[] args) throws InterruptedException {
         System.out.println("Welcome to Haunted! What's your first name? ");
         String name = personInput.nextLine();
@@ -503,9 +580,9 @@ public class Person {
         Thread.sleep(1000);
         System.out.println("--------------------");
         System.out.println("--------------------");
-        System.out.println("You step out of the taxi cab with nothing but your backback over your shoulder. Looking up, you see a beautiful gothic mansion, sprawling grounds, and ominous storm clouds above.");
-        String input = personInput.nextLine();
-        readInputs(input);
+        System.out.println("You step out of the taxi cab with nothing but your backback over your shoulder. Looking to the north, you see a beautiful gothic mansion, to the east and west are sprawling grounds, and there are ominous storm clouds above. Behind you, to the south, big metal gates clang shut.");
+        String firstInput = personInput.nextLine();
+        readInputs(firstInput);
         personInput.close();
     } 
 }
