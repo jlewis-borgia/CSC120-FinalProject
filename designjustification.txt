@@ -1,0 +1,42 @@
+Design Justification:
+
+I designed this game in four classes:
+
+Person Class:
+The person class contains all the methods which determine possible actions that the 
+user can take, which includes looking around, changing location, adding and removing 
+items from the inventory, printing out the inventory, and printing out the cheat 
+sheat. Additionally, in this class the user inputs are first read through in the 
+readInputs() method before the correct methods are called. 
+
+Room Class:
+This class contains all the different descriptions of each room within a method for
+each room, as well as more specific descriptions of the north, south, east, and west 
+descriptions of each room. Additionally, when a user enters a room with a ghost in it,
+after the general description of the room is printed out, the room's method within 
+the Room Class calls the given ghost method from within the Ghost Class.
+
+Ghost Class:
+This class contains descriptions of each ghost within a method for each individual
+ghost. In the terrace ghost method and the basement ghost method, the next input from
+the user is interpreted within the method and it determines how the ghost reacts to
+the user. 
+
+Item Class:
+The item class contains a method for each item with descriptions of the item. Also,
+if the user asks to add the item to the inventory, then the item method will send the
+information to the right inventory method within the Person class. 
+
+By using this approach I seperated out the differrent factors of the game (the ghosts,
+items, rooms, and user) and was able to figure out easily where everything should be 
+and how the game could be completed. Each class deals with specific instances in the 
+game and together it all runs smoothly and is able to handle different scenarios.
+
+While, this approach works and everything in the game runs, I could have also implemented
+a map instead of individual methods for rooms and different methods for moving around
+in the Person Class. This would have meant there was less code to have to deal with. 
+The reason I didn't choose to design it this way was because I felt less familiar with
+maps and I thought I would understand the program better if it was with concepts I was
+more familiar with. I don't regret doing it this way, but if I had a lot more time to
+work I would try to implement maps eventually.
+

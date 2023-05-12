@@ -1,14 +1,16 @@
 import java.util.ArrayList;
-import java.util.Scanner;
 
 /**
- * superclass that establishes basic info of a building
-*/
+ * Room class stores all the descriptions of the different houses including whether an item is contained in a room or not
+ */
 public class Room {
-    
-    public static Scanner roomInput = new Scanner(System.in);
 
+    static int basementFlashlightCounter = 0;
 
+    /**
+     * prints out different descriptions about the entrance, both in general and in each direction depending on the user's input
+     * @param String location
+     */
     public static void entrance(String location) {
         String entranceDescription = "The mansion is to the north of you, grounds to the east and west, and a closed gate to the south.";
         if (location.equals("N/A")) {
@@ -35,12 +37,15 @@ public class Room {
             String southEntranceDescription = "Turning behind you to the south, the cab you have taken has driven away and the huge iron gates have shut behind you.";
             System.out.println(southEntranceDescription);
         }
-        String entranceAsk = roomInput.nextLine();
-        Person.readInputs(entranceAsk);
+        Person.nextLine();
     }
 
+    /**
+     * prints out different descriptions about the entrance hall, both in general and in each direction depending on the user's input
+     * @param String location
+     */
     public static void entranceHall(String location) {
-        String entranceHallDescription = "This room is dark and gloomy, it definitely needs a remodel. It's a huge space but dimly lit with cobwebs hanging from the walls. There's a large carved wooden door to the north, two slighter smaller doors, one to the east and one to the west, and a large door to the south.";
+        String entranceHallDescription = "This room is dark and gloomy, it definitely needs a remodel. It's a huge space but dimly lit with cobwebs hanging from the walls. There's a large carved wooden door to the north and a slighter smaller door to the west, and a large door to the south.";
         if (location.equals("N/A")) {
             System.out.println("Entrance Hall:");
             System.out.println(entranceHallDescription);
@@ -54,21 +59,24 @@ public class Room {
             System.out.println(northEntranceHallDescription);
         }
         if (location.equals("east")) {
-            String eastEntranceHallDescription = "To the east is a smaller door covered with cobwebs. ";
+            String eastEntranceHallDescription = "To the east is a bunch of cobwebs. ";
             System.out.println(eastEntranceHallDescription);
         }
         if (location.equals("west")) {
-            String westEntranceHallDescription = "To the west there's a smaller door covered with cobwebs. It's especially dark over there.";
+            String westEntranceHallDescription = "To the west there's a small door covered with cobwebs. It's especially dark over there.";
             System.out.println(westEntranceHallDescription);
         }
         if (location == "south") {
             String southEntranceHallDescription = "A huge heavy door is to the south of you.";
             System.out.println(southEntranceHallDescription); 
         }
-        String entranceHallAsk = roomInput.nextLine(); 
-        Person.readInputs(entranceHallAsk);
+        Person.nextLine();
     }
 
+    /**
+     * prints out different descriptions about the dining room, both in general and in each direction depending on the user's input
+     * @param String location
+     */
     public static void diningRoom(String location) {
         String diningRoomDescription = "This room is nearly pitchblack. When you move closer to see what's inside, you see there's a long wooden table with blood spattered against the table top. Huge claw marks tear open a tapestry on the far wall. There are doors to the north, south, and east.";
         if (location.equals("N/A")) {
@@ -95,10 +103,13 @@ public class Room {
             String southdiningRoomDescription = "There's a door in this direction.";
             System.out.println(southdiningRoomDescription); 
         }
-        String diningRoomAsk = roomInput.nextLine(); 
-        Person.readInputs(diningRoomAsk);
+        Person.nextLine();
     }
 
+    /**
+     * prints out different descriptions about the library, both in general and in each direction depending on the user's input. It also calls the library ghost method from the Ghost Class 
+     * @param String location
+     */
     public static void library(String location, ArrayList<String> inventory) {
         String libraryDescription = "This room is huge, full of huge shelves of dusty old books. You can hardly see anything. Squinting, you see that there's a door to the north and a door to the west.";
         if (location.equals("N/A")) {
@@ -126,10 +137,13 @@ public class Room {
             String southLibraryDescription = "To the west are shelves and shelves of books, it's so dark you can't see down to the end of the rows of books.";
             System.out.println(southLibraryDescription); 
         }
-        String libraryAsk = roomInput.nextLine();
-        Person.readInputs(libraryAsk);
+        Person.nextLine();
     }
 
+    /**
+     * prints out different descriptions about the kitchen, both in general and in each direction depending on the user's input
+     * @param String location
+     */
     public static void kitchen(String location) {
         String kitchenDescription = "You are in a dingy kitchen. The surfaces are covered with dirt. A window is nailed tightly shut. There's doorway to the east and a small door open to a rickety staircase down.";
         if (location.equals("N/A")) {
@@ -160,13 +174,49 @@ public class Room {
             String downkitchenDescription = "There's a small door open to a rickety staircase going down.";
             System.out.println(downkitchenDescription); 
         }
-        String kitchenAsk = roomInput.nextLine();
-        Person.readInputs(kitchenAsk);
+        Person.nextLine();
     }
 
+    /**
+     * prints out different descriptions about the parlor, both in general and in each direction depending on the user's input
+     * @param String location
+     */
+    public static void parlor(String location) {
+        String parlorDescription = "This room contains dusty old furniture, big couches, and a large broken coffee table. There are doors to the south and east.";
+        if (location.equals("N/A")) {
+            System.out.println("Parlor:");
+            System.out.println(parlorDescription);
+        }
+        if (location.equals("look around")) {
+            System.out.println("Entrance Hall:");
+            System.out.println(parlorDescription);
+        }
+        if (location.equals("north")){ 
+            String northParlorDescription = "To the north is a large couch and some old broken cabinets.";
+            System.out.println(northParlorDescription);
+        }
+        if (location.equals("east")) {
+            String eastParlorDescription = "To the east is a door with a huge old grandfather clock beside it.";
+            System.out.println(eastParlorDescription);
+        }
+        if (location.equals("west")) {
+            String westParlorDescription = "Cobwebs cover this side of the room. There's a painting of an old man. His eyes follow you as you move.";
+            System.out.println(westParlorDescription);
+        }
+        if (location == "south") {
+            String southParlorDescription = "A door is this way, next to a musty old loveseat.";
+            System.out.println(southParlorDescription); 
+        }
+        Person.nextLine();
+    }
+
+    /**
+     * prints out different descriptions about the music room, both in general and in each direction depending on the user's input
+     * @param String location
+     */
     public static void musicRoom(String location, ArrayList<String> inventory) {
-        String musicRoomDescription = "You are in the music room. Old instruments line the walls, a grand piano is in the center. As you enter the piano begins to play ominously. There's a door to the west and another to the south. A flashlight is in the north side of the room.";
-        String noFlashlightMusicRoomDescription = "You are in the music room. Old instruments line the walls, a grand piano is in the center. As you enter the piano begins to play ominously. There's a door to the west and another to the south.";
+        String musicRoomDescription = "You are in the music room. Old instruments line the walls, a grand piano is in the center. As you enter the piano begins to play ominously. There's a door to the west. A flashlight is in the north side of the room.";
+        String noFlashlightMusicRoomDescription = "You are in the music room. Old instruments line the walls, a grand piano is in the center. As you enter the piano begins to play ominously. There's a door to the west.";
         if ((location.equals("N/A")) || (location.equals("look around"))) {
             System.out.println("Music Room:");
             if (inventory.contains("flashlight")) { 
@@ -193,15 +243,18 @@ public class Room {
             System.out.println(westMusicRoomDescription);
         }
         if (location.equals("south")) {
-            String southMusicRoomDescription = "There's a door this way.";
+            String southMusicRoomDescription = "There's more instruments hanging on this wall.";
             System.out.println(southMusicRoomDescription); 
         }
-        String musicRoomAsk = roomInput.nextLine();
-        Person.readInputs(musicRoomAsk);
+        Person.nextLine();
     }
 
+    /**
+     * prints out different descriptions about the terrace, both in general and in each direction depending on the user's input and calls the terrace ghost method from the ghost class
+     * @param String location
+     */
     public static void terrace(String location) {
-        String terraceDescription = "You are on the terrace. You look out to see the gloomy and dark grounds all around the mansion. There are doors to the south and the east.";
+        String terraceDescription = "You are on the terrace. You look out to see the gloomy and dark grounds all around the mansion. There's a door to the south and a walkway from the terrace onto the grounds to the north.";
         if (location.equals("N/A")) {
             System.out.println("Terrace:");
             System.out.println(terraceDescription);
@@ -216,21 +269,24 @@ public class Room {
             System.out.println(northTerraceDescription);
         }
         if (location.equals("east")) {
-            String eastTerraceDescription = "There's a door to the east.";
+            String eastTerraceDescription = "There's nothing in this direction except more expanse of the terrace.";
             System.out.println(eastTerraceDescription);
         }
         if (location.equals("west")) {
-            String westTerraceDescription = "Nothing in this direction except more expanse of the terrace.";
+            String westTerraceDescription = "There's nothing in this direction except more expanse of the terrace.";
             System.out.println(westTerraceDescription);
         }
         if (location.equals("south")) {
             String southTerraceDescription = "To the south is a doorway.";
             System.out.println(southTerraceDescription); 
         }
-        String terraceAsk = roomInput.nextLine();
-        Person.readInputs(terraceAsk);
+        Person.nextLine();
     }
 
+    /**
+     * prints out different descriptions about the basement, both in general and in each direction depending on the user's input and calls the basement ghost method from the basement class
+     * @param String location
+     */
     public static void basement(String location, ArrayList<String> inventory) { 
         String lightBasementDescription = "The basement is dark and dingy, but as you shine the light around you see old stone walls surrounding you and a key lying on the floor in front of you.";
         String noKeyLightBasementDescription = "The basement is dark and dingy, but as you shine the light around you see old stone walls surrounding you.";
@@ -241,11 +297,12 @@ public class Room {
             if (location.equals("N/A")) {
                 System.out.println("Basement:");
                 if (inventory.contains("flashlight")) { 
+                    basementFlashlightCounter += 1;         
                     System.out.println(noKeyLightBasementDescription);      
-                    Ghost.basementGhost(inventory);          
+                    Ghost.basementGhost(inventory, basementFlashlightCounter); 
                 } else { 
                     System.out.println(noLightBasementDescription);
-                    Ghost.basementGhost(inventory);          
+                    Ghost.basementGhost(inventory, basementFlashlightCounter);          
                 }
                 }
                 if (location.equals("look around")) {
@@ -291,11 +348,12 @@ public class Room {
                 if (location.equals("N/A")) {
                     System.out.println("Basement:");
                     if (inventory.contains("flashlight")) { 
+                        basementFlashlightCounter += 1;                  
                         System.out.println(lightBasementDescription);      
-                        Ghost.basementGhost(inventory);                    
+                        Ghost.basementGhost(inventory, basementFlashlightCounter);  
                     } else { 
                         System.out.println(noLightBasementDescription);
-                        Ghost.basementGhost(inventory);          
+                        Ghost.basementGhost(inventory, basementFlashlightCounter);          
                     }
                 }
                 if (location.equals("look around")) {
@@ -337,11 +395,13 @@ public class Room {
                     String upBasementDescription = "A rickety staircase leads back up.";
                     System.out.println(upBasementDescription);
                 }
-        }
-        String basementAsk = roomInput.nextLine();
-        Person.readInputs(basementAsk);
+            }   
+        Person.nextLine();
     }
     
+    /**
+     * prints out that you won the game when you use the key to open the gate. This ends the game
+     */
     public static void exit() {
         System.out.println("You escaped the haunted mansion!");
         System.out.println("You won the game!");
